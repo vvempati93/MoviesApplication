@@ -23,13 +23,14 @@ class MoviesListViewModel(val app: Application)  :  AndroidViewModel(app) {
     private val _properties = MutableLiveData<List<MovieDataClass>>()
     val properties: LiveData<List<MovieDataClass>> get() = _properties
     val likedMovies: MutableList<LikedMoviesDataClass> = mutableListOf()
+    val listOfMovies = mutableListOf<LikedMoviesDataClass>()
     fun getMostPopularMovies(){
         viewModelScope.launch {
             val resultList = MovieApi.retrofitService.getMoviesNowPlaying(API_KEY)
             Log.d("results", "the results $resultList")
             _properties.value = resultList.results
             for (property in resultList.results){
-                val item = LikedMoviesDataClass(property.id, false)
+                val item = LikedMoviesDataClass(property.id, false, property.title)
                 likedMovies.add(item)
             }
             resultList
@@ -38,23 +39,18 @@ class MoviesListViewModel(val app: Application)  :  AndroidViewModel(app) {
     fun observeMovieLiveData(): LiveData<List<MovieDataClass>>{
         return properties
     }
+    fun updateState(){
+
+    }
 
      fun addLikedMovieToDatabase(movie: MovieDataClass){
-        viewModelScope.launch{
-            var updatedMovie = LikedMoviesDataClass("", false)
-                for (movieItem in likedMovies) {
-                    if (movieItem.movieId == movie.id) {
-                        likedMovies.remove(movieItem)
-                        updatedMovie = if (movieItem.enabled) {
-                            LikedMoviesDataClass(movieItem.movieId, false)
-                        } else {
-                            LikedMoviesDataClass(movieItem.movieId, true)
-                        }
-                    }
-                }
-                likedMovies.add(updatedMovie)
-            }
-
+         val item: LikedMoviesDataClass? = listOfMovies.find { (it.movieId == movie.id) }
+         if (item != null){
+             listOfMovies.forEach { if(it.movieId == movie.id){listOfMovies.remove(it)} }
+         }
+         else {
+             listOfMovies.add(LikedMoviesDataClass(movie.id, true, movie.title))
+         }
     }
 
     class Factory(val app: Application) : ViewModelProvider.Factory {

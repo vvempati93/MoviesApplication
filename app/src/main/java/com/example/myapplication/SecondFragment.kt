@@ -44,9 +44,7 @@ class SecondFragment : Fragment() {
 
         val toast = Toast.makeText(requireContext(), favoriteText, duration)
         movieAdapter.onItemClick = {movie ->
-            lifecycleScope.launch {
-                updateLikedMovies(movie)
-            }
+            viewModel.addLikedMovieToDatabase(movie)
             toast.show()
         }
         binding.moviesList.apply {
@@ -61,18 +59,13 @@ class SecondFragment : Fragment() {
         return binding.root
 
     }
-    fun updateState(){
-        
-    }
-    private suspend fun updateLikedMovies(movie: MovieDataClass){
-        viewModel.addLikedMovieToDatabase(movie)
-    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.fab.setOnClickListener {
             //findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-            LikedMoviesDialogFragment(viewModel.likedMovies).show(
+            LikedMoviesDialogFragment(viewModel.listOfMovies).show(
                 childFragmentManager, "Tag")
         }
     }

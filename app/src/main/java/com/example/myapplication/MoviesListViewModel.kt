@@ -22,25 +22,17 @@ class MoviesListViewModel(val app: Application)  :  AndroidViewModel(app) {
     }
     private val _properties = MutableLiveData<List<MovieDataClass>>()
     val properties: LiveData<List<MovieDataClass>> get() = _properties
-    val likedMovies: MutableList<LikedMoviesDataClass> = mutableListOf()
     val listOfMovies = mutableListOf<LikedMoviesDataClass>()
     fun getMostPopularMovies(){
         viewModelScope.launch {
             val resultList = MovieApi.retrofitService.getMoviesNowPlaying(API_KEY)
             Log.d("results", "the results $resultList")
             _properties.value = resultList.results
-            for (property in resultList.results){
-                val item = LikedMoviesDataClass(property.id, false, property.title)
-                likedMovies.add(item)
-            }
             resultList
         }
     }
     fun observeMovieLiveData(): LiveData<List<MovieDataClass>>{
         return properties
-    }
-    fun updateState(){
-
     }
 
      fun addLikedMovieToDatabase(movie: MovieDataClass){

@@ -20,8 +20,8 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
         }
 }
 
-@BindingAdapter("listData")
-fun bindRecyclerView(recyclerView: RecyclerView, movies: List<MovieDataClass>?){
-    val adapter = recyclerView.adapter as PhotoGridAdapter
-    adapter.submitList(movies)
-}
+//@BindingAdapter("listData")
+//fun bindRecyclerView(recyclerView: RecyclerView, movies: List<MovieDataClass>?) {
+//    val adapter = recyclerView.adapter as MoviesListAdapter
+//    adapter.moviesList = movies
+//}

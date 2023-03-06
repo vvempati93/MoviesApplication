@@ -1,43 +1,47 @@
 package com.example.myapplication
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.databinding.MoviesItemBinding
+import kotlinx.coroutines.NonDisposableHandle.parent
 
-class MoviesViewHolder(var binding: MoviesItemBinding) : RecyclerView.ViewHolder(binding.root){
-    fun bind(movie: MovieDataClass) {
-        binding.property = movie
-        binding.executePendingBindings()
+const val IMAGE_URL_PREFIX = "https://image.tmdb.org/t/p/w500"
+class MovieAdapter : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+    private var movieList = ArrayList<MovieDataClass>()
+    var onItemClick: ((MovieDataClass) -> Unit)? = null
+    fun setMovieList(movieList : List<MovieDataClass>){
+        this.movieList = movieList as ArrayList<MovieDataClass>
+        notifyDataSetChanged()
     }
-
-}
-
-class PhotoGridAdapter :ListAdapter<MovieDataClass, MoviesViewHolder> (DiffCallback) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
-        return MoviesViewHolder(MoviesItemBinding.inflate(LayoutInflater.from(parent.context)))
-    }
-
-    override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
-        val movie = getItem(position)
-//        Glide.with(holder.itemView)
-//            .load("https://api.themoviedb.org/3/movie/"+movie.posterImage)
-//            .into(holder.binding.movieImage)
-//        holder.binding.moviesItem.text = movie.title
-        holder.bind(movie)
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<MovieDataClass>() {
-        override fun areItemsTheSame(oldItem: MovieDataClass, newItem: MovieDataClass): Boolean {
-            return oldItem == newItem
+    inner class ViewHolder(val binding : MoviesItemBinding) : RecyclerView.ViewHolder(binding.root){
+        init {
+            itemView.setOnClickListener {
+                onItemClick?.invoke(
+                    movieList[adapterPosition]
+                )
+            }
         }
-
-        override fun areContentsTheSame(oldItem: MovieDataClass, newItem: MovieDataClass): Boolean {
-            return oldItem.id == newItem.id
-        }
-
     }
-}
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            MoviesItemBinding.inflate(
+                LayoutInflater.from(
+                    parent.context
+                )
+            )
+        )
+    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Glide.with(holder.itemView)
+            .load(IMAGE_URL_PREFIX+movieList[position].posterImage)
+            .into(holder.binding.movieImage)
+        holder.binding.moviesItem.text = movieList[position].title
+    }
+    override fun getItemCount(): Int {
+        return movieList.size
+    }}

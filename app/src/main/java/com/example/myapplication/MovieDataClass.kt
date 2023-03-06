@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.view.View
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -10,8 +11,7 @@ data class MovieDataClass(
     @Json(name ="title")
     val title: String,
     @Json(name ="poster_path")
-    val posterImage: String
-)
+    val posterImage: String)
 
 @JsonClass(generateAdapter = true)
 data class ResultDataClass(
